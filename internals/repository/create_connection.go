@@ -14,7 +14,7 @@ func CreateConnection() *queries.Queries {
 	// making connection to database
 	conn, err := sql.Open("postgres", dbUrl)
 	if err != nil {
-		panic("connection to database failed")
+		panic(err)
 	}
 
 	// creating and returning queries instance

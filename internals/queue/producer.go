@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/google/uuid"
@@ -49,18 +50,22 @@ func NewQueueConn() *QueueConn {
 }
 
 // ch - create channel on rbmq connection
-func (q QueueConn) ch() *amqp.Channel {
-	ch, _ := (*q.conn).Channel()
-	return ch
+func (q QueueConn) ch() (*amqp.Channel, error) {
+	ch, err := (*q.conn).Channel()
+	return ch, err
 }
 
+// publish message to "notifcation" exchange
 func (q QueueConn) Publish(ctx context.Context, otelTracer trace.Tracer, notifId uuid.UUID, channelType string) error {
 	// otel
 	_, span := otelTracer.Start(ctx, "pushing message to RBMQ")
 	defer span.End()
 
 	// create channel
-	ch := q.ch()
+	ch, err := q.ch()
+	if err != nil {
+		return err
+	}
 
 	// create message
 	msg := rbmq.NotifMsg{
@@ -86,4 +91,105 @@ func (q QueueConn) Publish(ctx context.Context, otelTracer trace.Tracer, notifId
 			Body: msgBytes,
 		},
 	)
+}
+
+// create queue and bind it "notification" exchange
+// queue will be durable, non-exclusive, no auto-delete
+func (q QueueConn) CreateQueueAndBind(
+	queueName string,
+	workerType string,
+) (amqp.Queue, error) {
+	// create channel of checking queue exits
+	channel1, err := q.ch()
+	if err != nil {
+		return amqp.Queue{}, err
+	}
+
+	// check if queue exits
+	queue_exists, err := channel1.QueueDeclarePassive(
+		queueName,
+		true,  // durable queue
+		false, // no auto delete, if last connection ends queue will be not deleted
+		false, // non exclusive, so other connection can access it
+		false, // no fire and forget
+		nil,
+	)
+
+	// if not exits create and bind
+	if err != nil {
+		// creating channel to create queue
+		channel2, err := q.ch()
+		if err != nil {
+			return amqp.Queue{}, err
+		}
+
+		// creating queue
+		queue, err := channel2.QueueDeclare(
+			queueName,
+			true,  // durable queue
+			false, // no auto delete, if last connection ends queue will be not deleted
+			false, // non exclusive, so other connection can access it
+			false, // no fire and forget
+			nil,
+		)
+		// routing key
+		val, ok := (*q.routingKeys)[workerType]
+		if !ok {
+			return amqp.Queue{}, fmt.Errorf("routing key not exits for workers : %s", workerType)
+		}
+
+		// binding queue to "notification" exchange
+		err = channel2.QueueBind(
+			queue.Name,
+			val, // routing key
+			q.exchangeName,
+			false,
+			nil,
+		)
+
+		// binding fails then delete queue
+		if err != nil {
+			//deleting queue
+			_, err1 := channel2.QueueDelete(queue.Name, false, false, false)
+			if err1 != nil {
+				// queue created, binding failed, and deleting queue also failed
+				return amqp.Queue{}, err1
+			}
+
+			// queue created, binding failed, queue deleted
+			return amqp.Queue{}, err
+		}
+
+		// queue created
+		return queue, nil
+
+	}
+
+	// queue already exits
+	return queue_exists, nil
+}
+
+// it will create a consumer on queue and return channel of delivery
+func (q QueueConn) CreateConsumer(queueName string) (<-chan amqp.Delivery, error) {
+	// creating channel
+	channel, err := q.ch()
+	if err != nil {
+		return nil, err
+	}
+
+	// creating consumer
+	consumer, err := channel.Consume(
+		queueName,
+		"",
+		false, // no auto ack
+		true,  // exclusive, until this consumer is alive no other can consume queue
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return consumer, nil
 }
