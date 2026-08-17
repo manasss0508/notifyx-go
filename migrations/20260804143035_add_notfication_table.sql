@@ -5,8 +5,8 @@ CREATE TABLE notifications
     channel TEXT NOT NULL ,
     recipient      TEXT             NOT NULL,           -- mail or number
     template       TEXT             NOT NULL,           -- message template
-    name           TEXT             NOT NULL,           -- variable name
-    status         TEXT             NOT NULL,           -- status of notifcation "PENDING", "PROCESSING", "SENT", "FAILED", "RETRYING"
+    variables           TEXT             NOT NULL,           -- variables of template
+    status         TEXT             NOT NULL,           -- status of notification "PENDING", "PROCESSING", "SENT", "FAILED", "RETRYING"
     priority       TEXT             NOT NULL,           -- "LOW", "MEDIUM", "HIGH"
     scheduled_at   TIMESTAMP WITH TIME ZONE,                           -- when notification should be sent
     retry_count    INT     NOT NULL  DEFAULT 0,                 -- count of retry sending

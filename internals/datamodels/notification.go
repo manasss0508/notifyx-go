@@ -9,12 +9,12 @@ import (
 
 // =========================== create notification
 type CreateNotificationRequest struct {
-	Channel    string    `json:"channel"`
-	Recipient  string    `json:"recipient"`
-	Template   string    `json:"template"`
-	Name       string    `json:"name"`
-	Priority   string    `json:"priority"`
-	ScheduleAt time.Time `json:"schedule_at"`
+	Channel    string            `json:"channel"`
+	Recipient  string            `json:"recipient"`
+	Template   string            `json:"template"`
+	Variables  map[string]string `json:"variables"`
+	Priority   string            `json:"priority"`
+	ScheduleAt time.Time         `json:"schedule_at"`
 }
 
 type CreateNotificationResponse struct {

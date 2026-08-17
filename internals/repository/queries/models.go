@@ -16,7 +16,7 @@ type Notification struct {
 	Channel       string
 	Recipient     string
 	Template      string
-	Name          string
+	Variables     string
 	Status        string
 	Priority      string
 	ScheduledAt   sql.NullTime
@@ -26,4 +26,14 @@ type Notification struct {
 	UpdatedAt     time.Time
 	SentAt        sql.NullTime
 	FailureReason sql.NullString
+}
+
+type Template struct {
+	ID        uuid.UUID
+	Name      string
+	Channel   string
+	Subject   string
+	Body      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

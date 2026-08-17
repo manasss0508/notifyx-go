@@ -12,9 +12,9 @@ import (
 )
 
 const dbCreateNotification = `-- name: DbCreateNotification :one
-INSERT INTO notifications(id,channel,recipient,template,name,priority,status)
+INSERT INTO notifications(id,channel,recipient,template,variables,priority,status)
 VALUES ($1,$2,$3,$4,$5,$6,$7)
-    RETURNING id, channel, recipient, template, name, status, priority, scheduled_at, retry_count, max_retry, created_at, updated_at, sent_at, failure_reason
+    RETURNING id, channel, recipient, template, variables, status, priority, scheduled_at, retry_count, max_retry, created_at, updated_at, sent_at, failure_reason
 `
 
 type DbCreateNotificationParams struct {
@@ -22,7 +22,7 @@ type DbCreateNotificationParams struct {
 	Channel   string
 	Recipient string
 	Template  string
-	Name      string
+	Variables string
 	Priority  string
 	Status    string
 }
@@ -33,7 +33,7 @@ func (q *Queries) DbCreateNotification(ctx context.Context, arg DbCreateNotifica
 		arg.Channel,
 		arg.Recipient,
 		arg.Template,
-		arg.Name,
+		arg.Variables,
 		arg.Priority,
 		arg.Status,
 	)
@@ -43,7 +43,7 @@ func (q *Queries) DbCreateNotification(ctx context.Context, arg DbCreateNotifica
 		&i.Channel,
 		&i.Recipient,
 		&i.Template,
-		&i.Name,
+		&i.Variables,
 		&i.Status,
 		&i.Priority,
 		&i.ScheduledAt,
@@ -58,7 +58,7 @@ func (q *Queries) DbCreateNotification(ctx context.Context, arg DbCreateNotifica
 }
 
 const dbGetNotificationById = `-- name: DbGetNotificationById :one
-SELECT id, channel, recipient, template, name, status, priority, scheduled_at, retry_count, max_retry, created_at, updated_at, sent_at, failure_reason
+SELECT id, channel, recipient, template, variables, status, priority, scheduled_at, retry_count, max_retry, created_at, updated_at, sent_at, failure_reason
 FROM notifications
 WHERE id=$1
 `
@@ -71,7 +71,7 @@ func (q *Queries) DbGetNotificationById(ctx context.Context, id uuid.UUID) (Noti
 		&i.Channel,
 		&i.Recipient,
 		&i.Template,
-		&i.Name,
+		&i.Variables,
 		&i.Status,
 		&i.Priority,
 		&i.ScheduledAt,
