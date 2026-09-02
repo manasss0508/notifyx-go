@@ -11,9 +11,9 @@ import (
 )
 
 // takes consumer and process each message
-func ProcessEachMessageMail(state api.AppState, consumer <-chan amqp.Delivery) {
+func ProcessEachMessageMail(state *api.AppState, consumer <-chan amqp.Delivery) {
 	for msg := range consumer {
-		fmt.Println(msg)
+		//fmt.Println(msg)
 		// starting go routine to process message
 		go func() {
 			// getting state
@@ -30,9 +30,26 @@ func ProcessEachMessageMail(state api.AppState, consumer <-chan amqp.Delivery) {
 			notificationId := notification.NotficationId
 
 			// get notification from database
-			repository.DbGetNotification(context.Background(), nil, state.Db, notificationId)
+			notif, err := repository.DbGetNotification(context.Background(), (*state).OtelTracer, (*state).Db, notificationId)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 
-			// prepare template
+			// get template
+			template, err := (*(*state).TemplateCache).GetTemplateMail((*state).Db, notif.Channel, notif.Template)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			// render template
+			subject, body := service.TemplateRender(template, notif.Variables)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println(subject, body)
 
 			// send main
 

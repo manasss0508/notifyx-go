@@ -9,6 +9,7 @@ import (
 	"github.com/manasss0508/notifyx-go/internals/api"
 	"github.com/manasss0508/notifyx-go/internals/queue"
 	"github.com/manasss0508/notifyx-go/internals/repository"
+	"github.com/manasss0508/notifyx-go/internals/template_engine"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -27,11 +28,14 @@ func Load() *api.AppState {
 	// creating rbmq connection
 	rbmq := queue.NewQueueConn()
 
+	// template cache
+	tempCache := template_engine.NewTemplateCache()
+
 	// creating otel tracer
 	tracer := otel.Tracer("notifyx")
 
 	// creating app state
-	return api.NewAppState(queries, rbmq, tracer)
+	return api.NewAppState(queries, rbmq, tracer, tempCache)
 
 }
 

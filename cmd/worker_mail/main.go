@@ -27,5 +27,5 @@ func main() {
 	}
 
 	fmt.Println(" email worker started and processing message")
-	workers.ProcessEachMessageMail((*state), consumer)
+	workers.ProcessEachMessageMail(state, consumer)
 }

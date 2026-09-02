@@ -13,7 +13,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'welcome',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Welcome to NotifyX, {{name}}!',
                                                              'Hello {{name}},
 
@@ -27,7 +27,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'otp',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Your OTP Code',
                                                              'Hello {{name}},
 
@@ -37,12 +37,12 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                              This code will expire in {{expiry_minutes}} minutes.
 
-                                                             If you didn''t request this code, please ignore this email.'
+                                                             If you didn''t request this code, please ignore this MAIL.'
                                                          ),
 
                                                          (
                                                              'password_reset',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Reset Your Password',
                                                              'Hello {{name}},
 
@@ -56,12 +56,12 @@ INSERT INTO templates (name, channel, subject, body) VALUES
                                                          ),
 
                                                          (
-                                                             'email_verification',
-                                                             'EMAIL',
-                                                             'Verify Your Email Address',
+                                                             'MAIL_verification',
+                                                             'MAIL',
+                                                             'Verify Your MAIL Address',
                                                              'Hello {{name}},
 
-                                                             Please verify your email address by clicking the link below.
+                                                             Please verify your MAIL address by clicking the link below.
 
                                                              {{verification_link}}
 
@@ -70,7 +70,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'login_alert',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'New Login Detected',
                                                              'Hello {{name}},
 
@@ -85,7 +85,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'order_confirmation',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Order {{order_id}} Confirmed',
                                                              'Hello {{name}},
 
@@ -100,7 +100,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'order_shipped',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Your Order Is On The Way',
                                                              'Hello {{name}},
 
@@ -114,7 +114,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'payment_success',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Payment Successful',
                                                              'Hello {{name}},
 
@@ -129,7 +129,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'payment_failed',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Payment Failed',
                                                              'Hello {{name}},
 
@@ -144,7 +144,7 @@ INSERT INTO templates (name, channel, subject, body) VALUES
 
                                                          (
                                                              'subscription_renewal',
-                                                             'EMAIL',
+                                                             'MAIL',
                                                              'Subscription Renewed',
                                                              'Hello {{name}},
 
