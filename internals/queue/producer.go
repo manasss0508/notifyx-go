@@ -177,6 +177,22 @@ func (q QueueConn) CreateConsumer(queueName string) (<-chan amqp.Delivery, error
 		return nil, err
 	}
 
+	notifyClose := channel.NotifyClose(make(chan *amqp.Error))
+
+	go func() {
+		err := <-notifyClose
+
+		fmt.Println("========== CHANNEL CLOSED ==========")
+
+		if err != nil {
+			fmt.Printf("RabbitMQ error: %+v\n", err)
+			fmt.Println("Code:", err.Code)
+			fmt.Println("Reason:", err.Reason)
+		} else {
+			fmt.Println("RabbitMQ closed channel without error")
+		}
+	}()
+
 	// creating consumer
 	consumer, err := channel.Consume(
 		queueName,

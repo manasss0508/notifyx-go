@@ -7,9 +7,26 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
+
+const dBUpdateNotificationStatus = `-- name: DBUpdateNotificationStatus :execresult
+UPDATE notifications
+SET status=$2
+WHERE id=$1
+RETURNING id, channel, recipient, template, variables, status, priority, scheduled_at, retry_count, max_retry, created_at, updated_at, sent_at, failure_reason
+`
+
+type DBUpdateNotificationStatusParams struct {
+	ID     uuid.UUID
+	Status string
+}
+
+func (q *Queries) DBUpdateNotificationStatus(ctx context.Context, arg DBUpdateNotificationStatusParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, dBUpdateNotificationStatus, arg.ID, arg.Status)
+}
 
 const dbCreateNotification = `-- name: DbCreateNotification :one
 INSERT INTO notifications(id,channel,recipient,template,variables,priority,status)

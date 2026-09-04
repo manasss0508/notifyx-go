@@ -7,3 +7,10 @@ VALUES ($1,$2,$3,$4,$5,$6,$7)
 SELECT *
 FROM notifications
 WHERE id=$1;
+
+-- name: DBUpdateNotificationStatus :execresult
+UPDATE notifications
+SET status=$2
+WHERE id=$1
+RETURNING *
+;

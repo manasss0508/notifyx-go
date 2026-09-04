@@ -9,6 +9,7 @@ import (
 	"github.com/manasss0508/notifyx-go/internals/api"
 	"github.com/manasss0508/notifyx-go/internals/queue"
 	"github.com/manasss0508/notifyx-go/internals/repository"
+	"github.com/manasss0508/notifyx-go/internals/service"
 	"github.com/manasss0508/notifyx-go/internals/template_engine"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -34,8 +35,23 @@ func Load() *api.AppState {
 	// creating otel tracer
 	tracer := otel.Tracer("notifyx")
 
+	//email service
+	host := os.Getenv("SMTP_HOST")
+	port := os.Getenv("SMTP_PORT")
+	username := os.Getenv("SMTP_USERNAME")
+	password := os.Getenv("SMTP_PASSWORD")
+	from := os.Getenv("SMTP_FROM")
+
+	emailService := service.NewEmailService(
+		host,
+		port,
+		username,
+		password,
+		from,
+	)
+
 	// creating app state
-	return api.NewAppState(queries, rbmq, tracer, tempCache)
+	return api.NewAppState(queries, rbmq, tracer, tempCache, emailService)
 
 }
 
